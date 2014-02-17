@@ -1,26 +1,28 @@
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 
 public class HuffmanMain {
 
-	public Map<Character, Integer> ftable; 
-	public BufferedBitReader bitInput;
 	
-	public Map<Character, Integer> FrequencyTable(String compressedPathName) throws IOException {
-		bitInput = new BufferedBitReader(compressedPathName);
-		while(bitInput.readBit() != -1) {
-			if(ftable.containsKey(key)) {
-				int temp = ftable.get(key) + 1;
-				ftable.put(key, temp);
+	public Map<Character, Integer> FrequencyTable(String text){
+
+		Map<Character, Integer> ftable = new TreeMap<Character, Integer>();
+		
+		for(int i = 0; i < text.length(); i++) {
+			char getChar = text.charAt(i);
+			if(ftable.containsKey(getChar)) {
+				int temp = ftable.get(getChar) + 1;
+				ftable.put(getChar, temp);
 			}
 			else {
-				
+				ftable.put(getChar, 1);
 			}
 		}
 		
-		bitInput.close();
+		return ftable;
 	}
 	
 	public static void main(String[] args) {
