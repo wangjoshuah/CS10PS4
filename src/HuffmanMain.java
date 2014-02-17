@@ -8,7 +8,7 @@ public class HuffmanMain {
 	public Map<Character, Integer> ftable; 
 	public BufferedBitReader bitInput;
 	
-	public void FrequencyTable(String compressedPathName) throws IOException {
+	public Map<Character, Integer> FrequencyTable(String compressedPathName) throws IOException {
 		bitInput = new BufferedBitReader(compressedPathName);
 		while(bitInput.readBit() != -1) {
 			if(ftable.containsKey(key)) {
