@@ -1,10 +1,12 @@
+import java.util.*;
+
 /**
  * 
  * Character tree that defines individual characters like a Binary Tree of nodes
  * 
  * @author Josh Wang '15
  */
-class CharacterTree extends BinaryTree<UniChar> {
+class CharacterTree extends BinaryTree<UniChar> implements Comparable<CharacterTree>{
 
 	/**
 	 * Constructs a leaf
@@ -23,5 +25,13 @@ class CharacterTree extends BinaryTree<UniChar> {
 	public CharacterTree(UniChar data, CharacterTree left, CharacterTree right) {
 		super(data, left, right);
 	}
+
+	@Override
+	public int compareTo(CharacterTree o) {
+		// TODO Auto-generated method stub
+		return (int) Math.signum(data.getFrequency() - o.data.getFrequency());
+	}
+	
+	
 	
 }
