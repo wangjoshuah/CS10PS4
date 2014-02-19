@@ -14,25 +14,27 @@ import javax.sound.sampled.Line;
 import javax.swing.JFileChooser;
 
 public class HuffmanMain {
-	static Map<Character, String> characterMap = new TreeMap<Character, String>(); //keep our character map
-	static CharacterTree codeTree;
+	private Map<Character, String> characterMap; //keep our character map
+	private CharacterTree codeTree;
 	public String pathName;
-	
+
 	public HuffmanMain(String pathName) {
 		this.pathName = pathName;
 	}
 
-	private Map<Character, Integer> frequencyTable(String text) {
+	private Map<Character, Integer> frequencyTable() throws Exception {
+		BufferedReader input = new BufferedReader(new FileReader(this.pathName));  //create a buffered reader to take in the file
 		Map<Character, Integer> ftable = new TreeMap<Character, Integer>(); //Create new Map that has a key as a character and an integer representing the count a character appears as its value
-		for (int i = 0; i < text.length(); i++) { //loop over each character in the string
-			char getChar = text.charAt(i); //get the character at a given i
-			if (ftable.containsKey(getChar)) { //if the frequency table contains a given character already
-				int temp = ftable.get(getChar) + 1; //create a new variable equal to that character's value plus one
-				ftable.put(getChar, temp); //replace that given character with a value that is one greater than before
+		int nextChar; //have an int hold the current character
+		while ((nextChar = input.read()) != -1) { //will stop reading if the char is -1
+			if (ftable.containsKey((char)nextChar)) { //if the frequency table contains a given character already
+				int temp = ftable.get((char)nextChar) + 1; //create a new variable equal to that character's value plus one
+				ftable.put((char)nextChar, temp); //replace that given character with a value that is one greater than before
 			} else { //if the frequency table does not contain a given character
-				ftable.put(getChar, 1); //put that character into the map with a frequency of one
-			}
+				ftable.put((char)nextChar, 1); //put that character into the map with a frequency of one
+			}		
 		}
+		input.close(); //end reading
 		return ftable;
 	}
 
@@ -73,25 +75,6 @@ public class HuffmanMain {
 	 * @param codeTree		the binary tree with unique paths to each character
 	 * @return
 	 */
-	private Map<Character, String> codeRetreival(CharacterTree codeTree) {
-		CharacterTree pathHolder = codeTree; //create a path holder to remember where we are in the tree
-		String pathBitString = new String(); //have a string that keeps our path in terms of bits
-		Map<Character, String> codeMap = new TreeMap<Character, String>(); //instantiate the map we will return
-		while (!pathHolder.isLeaf()) { //while our current path still has children, 
-			if (pathHolder.getRight().isLeaf()) { //if our pathHolder's right child is a leaf,
-				codeMap.put(pathHolder.getRight().data.getKeyCharacter(), pathBitString + "1"); //add the right child's keycharacter and the current path concatenated with "1" since this child is on the right
-				pathHolder = pathHolder.getLeft(); //direct the path we keep going on to the left
-				pathBitString += "0"; //add "0" to our path bit string since we are going to the left for our next iteration of this loop
-			}
-			else { //our path continues down the right so the left one is the charcter and the right is more path
-				codeMap.put(pathHolder.getLeft().data.getKeyCharacter(), pathBitString + "0"); //add the left child and the path + "0" (do everything on the other side)
-				pathHolder = pathHolder.getRight(); //direct the path to the right since the right is not a leaf
-				pathBitString += "1"; //add 1 to the path bit string since we are going to the right
-			}
-		}
-		return codeMap; //return our map
-	}
-
 	private Map<Character, String> codeRetreivalRecurs(CharacterTree codeTree, String bitString, Map<Character, String> codeMap) { //recurses through it
 		if (codeTree.isLeaf()) { //if the node is a leaf
 			codeMap.put(codeTree.data.getKeyCharacter(), bitString); //add its data to the map
@@ -104,27 +87,17 @@ public class HuffmanMain {
 	}
 
 	public void compress() throws Exception { //just let us work on this file please
-		BufferedReader input = new BufferedReader(new FileReader(this.pathName));  //create a buffered reader to take in the file
-		String compressedFilename = this.pathName + "compressed.txt"; //add compressed for the compressed file's filename
-		BufferedBitWriter bitOutput = new BufferedBitWriter(compressedFilename); //create a new bitwrite to write a file here...
-		String fileText = new String(); //allocate a string to hold the file's text
-		char nextChar = 0; //create a char to take in the read characters
-		int readOut = 0;
-		System.out.println("enter while loop");
-		while (readOut != -1) { //will stop reading if the char is -1
-			readOut = input.read(); //get the next char in the file
-			nextChar = (char) readOut; //case our int to a char
-			if (readOut != -1) {  //if we have not gotten to the last character
-				fileText += nextChar; //add our next char to our filetext
-			}
-		}
-		System.out.println("exit while loop");
-		input.close(); //close the file cuz we have what we need
-		codeTree = createTree(singletonsToPriorityQueue(frequencyTable(fileText)));
+		
+		codeTree = createTree(singletonsToPriorityQueue(frequencyTable())); //get our code tree
 		characterMap = codeRetreivalRecurs(codeTree, "", characterMap); //call our methods to get a frequency table then make a priority queue and then create a tree of those and then get the map code of that
-//		characterMap = codeRetreival(createTree(singletonsToPriorityQueue(frequencyTable(fileText)))); //call our methods to get a frequency table then make a priority queue and then create a tree of those and then get the map code of that
-		for (int i = 0; i < fileText.length(); i ++) { //for the entire filestring,
-			String bitString = characterMap.get(fileText.charAt(i)); //get the bitstring of the character we are at
+
+		BufferedReader input = new BufferedReader(new FileReader(this.pathName));  //create a buffered reader to take in the file
+		BufferedBitWriter bitOutput = new BufferedBitWriter(this.pathName + "compressed.txt"); //create a new bitwrite to write a file here...
+		
+		int nextChar = 0; //hold the next character from the reader
+		System.out.println("enter while loop");
+		while ((nextChar = input.read()) != -1) { //will stop reading if the char is -1
+			String bitString = characterMap.get((char) nextChar); //get the bitstring of the character we are at
 			for (int j = 0; j < bitString.length(); j ++) { //for the entire bitstring
 				if (bitString.charAt(j) == '0') { //if the character is a 0,
 					bitOutput.writeBit(0); //write a 0 there
@@ -134,9 +107,11 @@ public class HuffmanMain {
 				}
 			}
 		}
+		System.out.println("exit while loop");
+		input.close(); //close the file cuz we have what we need		
 		bitOutput.close(); //end writing
 	}
-	
+
 	public void decompress() throws Exception {
 		BufferedBitReader bitInput = new BufferedBitReader(this.pathName + "compressed.txt"); //created bit reader to read each bit of the compressed file
 		int bit = 0; //create a local variable to store the bit
@@ -160,39 +135,39 @@ public class HuffmanMain {
 	}
 
 	/**
-	  * Puts up a fileChooser and gets path name for file to be opened.
-	  * Returns an empty string if the user clicks "cancel".
-	  * @return path name of the file chosen	
-	  */
-	 public static String getFilePath() {
-	  JFileChooser fc = new JFileChooser("."); // start at current directory
-	  
-	  int returnVal = fc.showOpenDialog(null);
-	  if(returnVal == JFileChooser.APPROVE_OPTION) {
-	   File file = fc.getSelectedFile();
-	   String pathName = file.getAbsolutePath();
-	   return pathName;
-	  }
-	  else
-	   return "";
-	 }
-	
+	 * Puts up a fileChooser and gets path name for file to be opened.
+	 * Returns an empty string if the user clicks "cancel".
+	 * @return path name of the file chosen	
+	 */
+	public static String getFilePath() {
+		JFileChooser fc = new JFileChooser("."); // start at current directory
+
+		int returnVal = fc.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			String pathName = file.getAbsolutePath();
+			return pathName;
+		}
+		else
+			return "";
+	}
+
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-//		compress("inputs/USConstitution.txt");
-//		decompress("inputs/USConstitution.txtcompressed");
-//		
-//		compress("inputs/testcase.txt");
-//		decompress("inputs/testcase.txtcompressed");
-//
-////		compress("inputs/WarAndPeace.txt");
-////		decompress("inputs/WarAndPeace.txtcompressed");
-		
+		//		compress("inputs/USConstitution.txt");
+		//		decompress("inputs/USConstitution.txtcompressed");
+		//		
+		//		compress("inputs/testcase.txt");
+		//		decompress("inputs/testcase.txtcompressed");
+		//
+		////		compress("inputs/WarAndPeace.txt");
+		////		decompress("inputs/WarAndPeace.txtcompressed");
+
 		String filePath = getFilePath();
 		HuffmanMain huffConvert = new HuffmanMain(filePath);
 		huffConvert.compress();
 		huffConvert.decompress();
-		
+
 		/*
 		 * read in the text to the frequency table
 		 * get our map of bit strings
