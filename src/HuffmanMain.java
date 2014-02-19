@@ -16,8 +16,13 @@ import javax.swing.JFileChooser;
 public class HuffmanMain {
 	static Map<Character, String> characterMap = new TreeMap<Character, String>(); //keep our character map
 	static CharacterTree codeTree;
+	public String pathName;
+	
+	public HuffmanMain(String pathName) {
+		this.pathName = pathName;
+	}
 
-	private static Map<Character, Integer> frequencyTable(String text) {
+	private Map<Character, Integer> frequencyTable(String text) {
 		Map<Character, Integer> ftable = new TreeMap<Character, Integer>(); //Create new Map that has a key as a character and an integer representing the count a character appears as its value
 		for (int i = 0; i < text.length(); i++) { //loop over each character in the string
 			char getChar = text.charAt(i); //get the character at a given i
@@ -36,7 +41,7 @@ public class HuffmanMain {
 	 * @param table		frequency table mapping character values to their frequencies
 	 * @return
 	 */
-	private static PriorityQueue<CharacterTree> singletonsToPriorityQueue(Map<Character, Integer> table) {
+	private PriorityQueue<CharacterTree> singletonsToPriorityQueue(Map<Character, Integer> table) {
 		PriorityQueue<CharacterTree> singletonQueue = new PriorityQueue<CharacterTree>(); //create a priority queue to hold all the singleton trees
 		Set<Character> charSet = table.keySet(); //get the set of values for the frequency table
 		for (Character letter : charSet) { //for each key in the map,
@@ -52,7 +57,7 @@ public class HuffmanMain {
 	 * @param queueOfTrees 		priority queue of singleton trees with data
 	 * @return
 	 */
-	private static CharacterTree createTree(PriorityQueue<CharacterTree> queueOfTrees) {
+	private CharacterTree createTree(PriorityQueue<CharacterTree> queueOfTrees) {
 		while (queueOfTrees.size() > 1) { //while we have multiple trees in our priority queue
 			CharacterTree lowestTree = queueOfTrees.remove(); //take the tree with the lowest frequency from the queue
 			CharacterTree secondLowestTree = queueOfTrees.remove(); //also take the second lowest tree from the queue
@@ -68,7 +73,7 @@ public class HuffmanMain {
 	 * @param codeTree		the binary tree with unique paths to each character
 	 * @return
 	 */
-	private static Map<Character, String> codeRetreival(CharacterTree codeTree) {
+	private Map<Character, String> codeRetreival(CharacterTree codeTree) {
 		CharacterTree pathHolder = codeTree; //create a path holder to remember where we are in the tree
 		String pathBitString = new String(); //have a string that keeps our path in terms of bits
 		Map<Character, String> codeMap = new TreeMap<Character, String>(); //instantiate the map we will return
@@ -87,7 +92,7 @@ public class HuffmanMain {
 		return codeMap; //return our map
 	}
 
-	private static Map<Character, String> codeRetreivalRecurs(CharacterTree codeTree, String bitString, Map<Character, String> codeMap) { //recurses through it
+	private Map<Character, String> codeRetreivalRecurs(CharacterTree codeTree, String bitString, Map<Character, String> codeMap) { //recurses through it
 		if (codeTree.isLeaf()) { //if the node is a leaf
 			codeMap.put(codeTree.data.getKeyCharacter(), bitString); //add its data to the map
 		}
@@ -98,19 +103,22 @@ public class HuffmanMain {
 		return codeMap; //return the code map
 	}
 
-	public static void compress(String filename) throws Exception { //just let us work on this file please
-		BufferedReader input = new BufferedReader(new FileReader(filename));  //create a buffered reader to take in the file
-		String compressedFilename = filename.concat("compressed"); //add compressed for the compressed file's filename
+	public void compress() throws Exception { //just let us work on this file please
+		BufferedReader input = new BufferedReader(new FileReader(this.pathName));  //create a buffered reader to take in the file
+		String compressedFilename = this.pathName + "compressed.txt"; //add compressed for the compressed file's filename
 		BufferedBitWriter bitOutput = new BufferedBitWriter(compressedFilename); //create a new bitwrite to write a file here...
 		String fileText = new String(); //allocate a string to hold the file's text
 		char nextChar = 0; //create a char to take in the read characters
 		int readOut = 0;
+		int count = fileText.length();
 		while (readOut != -1) { //will stop reading if the char is -1
+			System.out.println("String has: " + count);
 			readOut = input.read(); //get the next char in the file
 			nextChar = (char) readOut; //case our int to a char
 			if (readOut != -1) {  //if we have not gotten to the last character
 				fileText += nextChar; //add our next char to our filetext
 			}
+			count --;
 		}
 		input.close(); //close the file cuz we have what we need
 		codeTree = createTree(singletonsToPriorityQueue(frequencyTable(fileText)));
@@ -130,11 +138,11 @@ public class HuffmanMain {
 		bitOutput.close(); //end writing
 	}
 	
-	public static void decompress(String filename) throws Exception {
-		BufferedBitReader bitInput = new BufferedBitReader(filename); //created bit reader to read each bit of the compressed file
+	public void decompress() throws Exception {
+		BufferedBitReader bitInput = new BufferedBitReader(this.pathName + "compressed.txt"); //created bit reader to read each bit of the compressed file
 		int bit = 0; //create a local variable to store the bit
 		CharacterTree node = codeTree;
-		BufferedWriter output = new BufferedWriter(new FileWriter(filename + "decompressed")); 
+		BufferedWriter output = new BufferedWriter(new FileWriter(this.pathName + "decompressed.txt")); 
 		while (bit != -1) { //stop reading when the bit is returned is -1 aka end
 			bit = bitInput.readBit(); 
 			if (node.isLeaf()) { //if our node is a leaf
@@ -152,16 +160,39 @@ public class HuffmanMain {
 		output.close(); //end writing
 	}
 
+	/**
+	  * Puts up a fileChooser and gets path name for file to be opened.
+	  * Returns an empty string if the user clicks "cancel".
+	  * @return path name of the file chosen	
+	  */
+	 public static String getFilePath() {
+	  JFileChooser fc = new JFileChooser("."); // start at current directory
+	  
+	  int returnVal = fc.showOpenDialog(null);
+	  if(returnVal == JFileChooser.APPROVE_OPTION) {
+	   File file = fc.getSelectedFile();
+	   String pathName = file.getAbsolutePath();
+	   return pathName;
+	  }
+	  else
+	   return "";
+	 }
+	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		compress("inputs/USConstitution.txt");
-		decompress("inputs/USConstitution.txtcompressed");
+//		compress("inputs/USConstitution.txt");
+//		decompress("inputs/USConstitution.txtcompressed");
+//		
+//		compress("inputs/testcase.txt");
+//		decompress("inputs/testcase.txtcompressed");
+//
+////		compress("inputs/WarAndPeace.txt");
+////		decompress("inputs/WarAndPeace.txtcompressed");
 		
-		compress("inputs/testcase.txt");
-		decompress("inputs/testcase.txtcompressed");
-
-		compress("inputs/WarAndPeace.txt");
-		decompress("inputs/WarAndPeace.txtcompressed");
+		String filePath = getFilePath();
+		HuffmanMain huffConvert = new HuffmanMain(filePath);
+		huffConvert.compress();
+		huffConvert.decompress();
 		
 		/*
 		 * read in the text to the frequency table
