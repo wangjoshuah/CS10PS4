@@ -54,6 +54,15 @@ public class HuffmanMain {
 		}
 		return queueOfTrees.remove(); //return the last tree remaining
 	}
+	
+	/**
+	 * gets a map of the bitstring values for each character in the code tree
+	 * @param codeTree		the binary tree with unique paths to each character
+	 * @return
+	 */
+	public Map<Character, String> codeRetreival(CharacterTree codeTree) {
+		for (int i = 0, i < codeTree.)
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
