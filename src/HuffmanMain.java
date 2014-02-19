@@ -57,7 +57,22 @@ public class HuffmanMain {
 	 * @return
 	 */
 	public Map<Character, String> codeRetreival(CharacterTree codeTree) {
-		for (int i = 0, i < codeTree.)
+		CharacterTree pathHolder = codeTree; //create a path holder to remember where we are in the tree
+		String pathBitString = new String(); //have a string that keeps our path in terms of bits
+		Map<Character, String> codeMap = new TreeMap<Character, String>(); //instantiate the map we will return
+		while (!pathHolder.isLeaf()) { //while our current path still has children, 
+			if (pathHolder.getRight().isLeaf()) { //if our pathHolder's right child is a leaf,
+				codeMap.put(pathHolder.getRight().data.getKeyCharacter(), pathBitString + "1"); //add the right child's keycharacter and the current path concatenated with "1" since this child is on the right
+				pathHolder = (CharacterTree) pathHolder.getLeft(); //direct the path we keep going on to the left
+				pathBitString += "0"; //add "0" to our path bit string since we are going to the left for our next iteration of this loop
+			}
+			else { //our path continues down the right so the left one is the charcter and the right is more path
+				codeMap.put(pathHolder.getLeft().data.getKeyCharacter(), pathBitString + "0"); //add the left child and the path + "0" (do everything on the other side)
+				pathHolder = (CharacterTree) pathHolder.getRight(); //direct the path to the right since the right is not a leaf
+				pathBitString += "1"; //add 1 to the path bit string since we are going to the right
+			}
+		}
+		return codeMap; //return our map
 	}
 
 	public static void main(String[] args) {

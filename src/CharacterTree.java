@@ -25,7 +25,7 @@ class CharacterTree extends BinaryTree<UniChar> implements Comparable<CharacterT
 	public CharacterTree(UniChar data, CharacterTree left, CharacterTree right) {
 		super(data, left, right);
 	}
-
+	
 	@Override
 	public int compareTo(CharacterTree o) {
 		// TODO Auto-generated method stub

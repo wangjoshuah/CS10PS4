@@ -63,7 +63,7 @@ class UniChar implements Comparable<UniChar>{
 	@Override
 	public int compareTo(UniChar o) {
 		// TODO Auto-generated method stub
-		return (int) Math.signum(frequency - o.frequency);
+		return (int) Math.signum(frequency - o.frequency); //compare's frequency values and gives the lo
 	}
 	
 	
