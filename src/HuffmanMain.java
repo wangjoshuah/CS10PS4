@@ -110,16 +110,15 @@ public class HuffmanMain {
 		String fileText = new String(); //allocate a string to hold the file's text
 		char nextChar = 0; //create a char to take in the read characters
 		int readOut = 0;
-		int count = fileText.length();
+		System.out.println("enter while loop");
 		while (readOut != -1) { //will stop reading if the char is -1
-			System.out.println("String has: " + count);
 			readOut = input.read(); //get the next char in the file
 			nextChar = (char) readOut; //case our int to a char
 			if (readOut != -1) {  //if we have not gotten to the last character
 				fileText += nextChar; //add our next char to our filetext
 			}
-			count --;
 		}
+		System.out.println("exit while loop");
 		input.close(); //close the file cuz we have what we need
 		codeTree = createTree(singletonsToPriorityQueue(frequencyTable(fileText)));
 		characterMap = codeRetreivalRecurs(codeTree, "", characterMap); //call our methods to get a frequency table then make a priority queue and then create a tree of those and then get the map code of that
