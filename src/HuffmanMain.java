@@ -1,10 +1,14 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.swing.JFileChooser;
+
 public class HuffmanMain {
+
 	public Map<Character, Integer> FrequencyTable(String text) {
 		Map<Character, Integer> ftable = new TreeMap<Character, Integer>(); //Create new Map that has a key as a character and an integer representing the count a character appears as its value
 		for (int i = 0; i < text.length(); i++) { //loop over each character in the string
@@ -34,7 +38,7 @@ public class HuffmanMain {
 		}
 		return singletonQueue; //return our priority queue
 	}
-	
+
 	/**
 	 * Returns a fully constructed tree that will be our character binary tree mapping to binary bits
 	 * @param queueOfTrees 		priority queue of singleton trees with data
@@ -50,7 +54,7 @@ public class HuffmanMain {
 		}
 		return queueOfTrees.remove(); //return the last tree remaining
 	}
-	
+
 	/**
 	 * gets a map of the bitstring values for each character in the code tree
 	 * @param codeTree		the binary tree with unique paths to each character
@@ -75,9 +79,39 @@ public class HuffmanMain {
 		return codeMap; //return our map
 	}
 
+	public static String getFilePath() {
+		JFileChooser fc = new JFileChooser("."); // start at current directory
+
+		int returnVal = fc.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			String pathName = file.getAbsolutePath();
+			return pathName;
+		}
+		else
+			return "";
+	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
+
+
+		/*
+		 * read in the text to the frequency table
+		 * get our map of bit strings
+		 * read text again and write each character to bit string from map (using bitwriter)
+		 * 	get the string from the map
+		 * 	write each character using the bit writer
+		 * 	check if char == '0' then write 0
+		 * 		else if char == '1' then write literal 1
+		 * 			bitwrite(1)
+		 * 
+		 * e
+		 * look at map "1"
+		 * is this equal '1'
+		 * 	bitwrite write 1
+		 */
 	}
 
 }
