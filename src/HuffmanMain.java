@@ -5,21 +5,17 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class HuffmanMain {
-
 	public Map<Character, Integer> FrequencyTable(String text) {
-
-		Map<Character, Integer> ftable = new TreeMap<Character, Integer>();
-
-		for (int i = 0; i < text.length(); i++) {
-			char getChar = text.charAt(i);
-			if (ftable.containsKey(getChar)) {
-				int temp = ftable.get(getChar) + 1;
-				ftable.put(getChar, temp);
-			} else {
-				ftable.put(getChar, 1);
+		Map<Character, Integer> ftable = new TreeMap<Character, Integer>(); //Create new Map that has a key as a character and an integer representing the count a character appears as its value
+		for (int i = 0; i < text.length(); i++) { //loop over each character in the string
+			char getChar = text.charAt(i); //get the character at a given i
+			if (ftable.containsKey(getChar)) { //if the frequency table contains a given character already
+				int temp = ftable.get(getChar) + 1; //create a new variable equal to that character's value plus one
+				ftable.put(getChar, temp); //replace that given character with a value that is one greater than before
+			} else { //if the frequency table does not contain a given character
+				ftable.put(getChar, 1); //put that character into the map with a frequency of one
 			}
 		}
-
 		return ftable;
 	}
 
