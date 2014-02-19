@@ -74,16 +74,12 @@ public class HuffmanMain {
 		Map<Character, String> codeMap = new TreeMap<Character, String>(); //instantiate the map we will return
 		while (!pathHolder.isLeaf()) { //while our current path still has children, 
 			if (pathHolder.getRight().isLeaf()) { //if our pathHolder's right child is a leaf,
-				System.out.println(pathBitString + "1");
 				codeMap.put(pathHolder.getRight().data.getKeyCharacter(), pathBitString + "1"); //add the right child's keycharacter and the current path concatenated with "1" since this child is on the right
-				System.out.println(codeMap.get(pathHolder.getRight().data.getKeyCharacter()));
 				pathHolder = pathHolder.getLeft(); //direct the path we keep going on to the left
 				pathBitString += "0"; //add "0" to our path bit string since we are going to the left for our next iteration of this loop
 			}
 			else { //our path continues down the right so the left one is the charcter and the right is more path
-				System.out.println(pathBitString + "0");
 				codeMap.put(pathHolder.getLeft().data.getKeyCharacter(), pathBitString + "0"); //add the left child and the path + "0" (do everything on the other side)
-				System.out.println(codeMap.get(pathHolder.getLeft().data.getKeyCharacter()));
 				pathHolder = pathHolder.getRight(); //direct the path to the right since the right is not a leaf
 				pathBitString += "1"; //add 1 to the path bit string since we are going to the right
 			}
@@ -91,16 +87,15 @@ public class HuffmanMain {
 		return codeMap; //return our map
 	}
 
-	private static Map<Character, String> codeRetreivalRecurs(CharacterTree codeTree, String bitString, Map<Character, String> codeMap) {
-		if (codeTree.isLeaf()) {
-			codeMap.put(codeTree.data.getKeyCharacter(), bitString);
-			System.out.println("Character is " + codeTree.data.getKeyCharacter() + " bit string is " + bitString);
+	private static Map<Character, String> codeRetreivalRecurs(CharacterTree codeTree, String bitString, Map<Character, String> codeMap) { //recurses through it
+		if (codeTree.isLeaf()) { //if the node is a leaf
+			codeMap.put(codeTree.data.getKeyCharacter(), bitString); //add its data to the map
 		}
-		else {
-			codeMap = codeRetreivalRecurs( codeTree.getLeft(), bitString + "0", codeMap);
-			codeMap = codeRetreivalRecurs( codeTree.getRight(), bitString + "1", codeMap);
+		else { //if the node is not a leaf,
+			codeMap = codeRetreivalRecurs( codeTree.getLeft(), bitString + "0", codeMap); //recurs on its left child
+			codeMap = codeRetreivalRecurs( codeTree.getRight(), bitString + "1", codeMap); //recurse on its right child
 		}
-		return codeMap;
+		return codeMap; //return the code map
 	}
 
 	public static void compress(String filename) throws Exception { //just let us work on this file please
@@ -117,7 +112,6 @@ public class HuffmanMain {
 				fileText += nextChar; //add our next char to our filetext
 			}
 		}
-		System.out.println(fileText);
 		input.close(); //close the file cuz we have what we need
 		codeTree = createTree(singletonsToPriorityQueue(frequencyTable(fileText)));
 		characterMap = codeRetreivalRecurs(codeTree, "", characterMap); //call our methods to get a frequency table then make a priority queue and then create a tree of those and then get the map code of that
