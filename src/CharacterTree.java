@@ -32,6 +32,12 @@ class CharacterTree extends BinaryTree<UniChar> implements Comparable<CharacterT
 		return (int) Math.signum(data.getFrequency() - o.data.getFrequency());
 	}
 	
-	
+	public CharacterTree getLeft() {
+		return (CharacterTree) super.getLeft();
+	}
+
+	public CharacterTree getRight() {
+		return (CharacterTree) super.getRight();
+	}
 	
 }
