@@ -19,6 +19,7 @@ public class HuffmanMain {
 	public String pathName;
 
 	public HuffmanMain(String pathName) {
+		characterMap = new TreeMap<Character, String>();
 		this.pathName = pathName;
 	}
 
